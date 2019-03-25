@@ -4,6 +4,9 @@
     "slug": "cuecards",
     "privacy": "public",
     "sdkVersion": "32.0.0",
+    "android": {
+      "package": "com.teamdefault.cuecards"
+    },
     "platforms": [
       "ios",
       "android"

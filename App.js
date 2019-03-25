@@ -6,7 +6,9 @@ import {
   Dimensions,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Animated,
+  Easing,
 } from "react-native";
 import CardFlip from "react-native-card-flip";
 import SwiperFlatList from "react-native-swiper-flatlist";
@@ -20,6 +22,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: width,
     height: height * 0.5,
+    padding: 25,
   },
   card: {
     flex: 1,
@@ -148,10 +151,10 @@ export default class App extends React.Component {
       isFacingFront: true,
       cuecards: this.allCuecards,
       stats: {
-        unknown: '100%',
-        poor: '0%',
-        decent: '0%',
-        good: '0%',
+        unknown: new Animated.Value(width),
+        poor: new Animated.Value(0),
+        decent: new Animated.Value(0),
+        good: new Animated.Value(0),
       }
     };
   }
@@ -170,15 +173,15 @@ export default class App extends React.Component {
       }
     }
 
-    // console.log(this.cardStats);
-    // console.log(counts);
-
-    this.setState({ stats : {
-      unknown: (counts[3] / nCards * 100) + '%',
-      poor: (counts[0] / nCards * 100) + '%',
-      decent: (counts[1] / nCards * 100) + '%',
-      good: (counts[2] / nCards * 100) + '%',
-    }});
+    const { unknown, poor, decent, good } = this.state.stats;
+    const animatedValues = [poor, decent, good, unknown];
+    for (i in animatedValues) {
+      Animated.timing(animatedValues[i], {
+        duration: 250,
+        easing: Easing.linear(Easing.ease),
+        toValue: counts[i] / nCards * width,
+      }).start();
+    }
   }
 
   renderItemComponent = ({ item }) => (
@@ -205,7 +208,6 @@ export default class App extends React.Component {
       });
     } else {
       // Reshuffle
-      console.log('reshuffling');
       const allGood = this.allCuecards.reduce((acc, cur) => acc && this.cardStats[cur.id] === 2, true)
       const PROB_INCLUDE_GOOD_CARD = 0.2;
       let cuecards = [];
@@ -284,25 +286,12 @@ export default class App extends React.Component {
           </View>
         )}
         <View style={{ position: 'absolute', flexDirection: 'row', bottom: 0 }}>
-            <View style={[styles.statBar, { backgroundColor: 'red', width: this.state.stats.poor }]} />
-            <View style={[styles.statBar, { backgroundColor: 'yellow', width: this.state.stats.decent }]} />
-            <View style={[styles.statBar, { backgroundColor: 'green', width: this.state.stats.good }]} />
-            <View style={[styles.statBar, { backgroundColor: '#d2e7ff', width: this.state.stats.unknown }]} />
+            <Animated.View style={[styles.statBar, { backgroundColor: 'red', width: this.state.stats.poor }]} />
+            <Animated.View style={[styles.statBar, { backgroundColor: 'yellow', width: this.state.stats.decent }]} />
+            <Animated.View style={[styles.statBar, { backgroundColor: 'green', width: this.state.stats.good }]} />
+            <Animated.View style={[styles.statBar, { backgroundColor: '#d2e7ff', width: this.state.stats.unknown }]} />
         </View>
       </View>
     );
   }
 }
-
-// const mapStateToProps = state => {
-//   return { ...state.cuecard };
-// };
-
-// const mapDispatchToProps = {
-//   getCuecards
-// };
-
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(CueCard);
