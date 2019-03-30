@@ -111,8 +111,11 @@ const CUECARDS = [
   },
 ]
 
-const CUECARDS_A = CUECARDS.slice(0, 5);
-const CUECARDS_B = CUECARDS.slice(5, CUECARDS.length)
+const CUECARDS_A = [0, 2, 4, 6, 8].map(i => CUECARDS[i]);
+const CUECARDS_B = [1, 3, 5, 7, 9].map(i => CUECARDS[i]);
+
+console.log('A', CUECARDS_A);
+console.log('B', CUECARDS_B);
 
 const QuestionView = props => (
   <View>
@@ -149,7 +152,6 @@ export default class Flashcards extends React.Component {
     this.idx = 0;
     this.cardStats = {};
     this.allCuecards = props.navigation.getParam('version') === 'A' ? CUECARDS_A : CUECARDS_B;
-    console.log('Got allCuecards =', this.allCuecards);
     this.state = {
       isFacingFront: true,
       cuecards: this.allCuecards,
@@ -261,7 +263,6 @@ export default class Flashcards extends React.Component {
 
   onViewableItemsChanged(info) {
     this.currentCard = info.viewableItems[0].item;
-    console.log('currentCard set to', this.currentCard);
   }
 
   render() {
